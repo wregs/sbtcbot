@@ -28,7 +28,7 @@ The bot should send the request to cryptopay.me for a list of invoices. The invo
 To run the bot has to have a valid token for Slack user/bot. The token should be placed in the variable inside sbtcbot.php file. The value SLACK\_BOT\_TOKEN should be replaces with a valid bot token.
 The file that maps Slack user to his cryptopay.me token should also be defined and mentioned in sbtcbot.php file.
 The value SLACK\_TO\_CRYPTOPAY\_MAP\_FILE should be replaces with a valid fail name.
-The file should be in json file format, for example:
+The file should be in json file format, for example:<br\>
 `{
   "slack_user":"7rio088w990sdf09sd0f9sdf99"
 }`
