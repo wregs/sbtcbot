@@ -1,11 +1,23 @@
 <?php
-
+/*****************************
+ * Slack BOT with a functionality to handle basic request for cryptopay.me
+ * 
+ * Bot is based on php-slack-bot https://github.com/jclg/php-slack-bot
+ * 
+ * The following is code is free to use as long as the original contribution of
+ * its author is mentioned in any form
+ * 
+ * by Pavel Vavilov
+ * 
+ * */
+ 
 require 'vendor/autoload.php';
 use PhpSlackBot\Bot;
 
 static $bot_token="SLACK_BOT_TOKEN";
 static $usermapfile="SLACK_TO_CRYPTOPAY_MAP_FILE";
 
+// class to dump messages to console
 class CryptoLogger{
 	public static function log_msg($message){
 		print(date("c")." $message\n");
@@ -20,7 +32,7 @@ class BtcCommand extends \PhpSlackBot\Command\BaseCommand {
     protected function configure() {
         $this->setName('btc');
     }
-    
+    // function uses web api for attachments addition, sends messages to im chat
     protected function sendAttachment($channel, $username, $message, $attachment,$token) {
 		$ch= curl_init("https://slack.com/api/chat.postMessage");
 		$responce=array(
@@ -92,6 +104,8 @@ class BtcCommand extends \PhpSlackBot\Command\BaseCommand {
                         $help_commands);
 		
 	}
+	// function processes view wallet command
+	// connects to cryptopay.me server to view user balance, user credentials are read from file slack user<-->cryptopay token
 	private function viewWallet(){
 		global $usermapfile;
 		$json_usermap=file_get_contents($usermapfile);
@@ -131,6 +145,7 @@ class BtcCommand extends \PhpSlackBot\Command\BaseCommand {
         
 		$this->send($this->getCurrentChannel(), $this->initiator,"Wallet balance:\n".$balance_msg);
 	}
+	// function processes new invoices and sends request to cryptopay.me server
 	private function newInvoice($args){
 		global $usermapfile;
 		
@@ -198,8 +213,8 @@ class BtcCommand extends \PhpSlackBot\Command\BaseCommand {
                         "Waiting $btc_price BTC to $btc_address\n",$attachment,$bot_token);
 		
 	}
-	private function viewRates(){
-		
+	// function processes view rates command
+	private function viewRates(){		
 
         CryptoLogger::log_msg("Sent rates request");
         $rates_json_responce=file_get_contents("http://cryptopay.me/api/rates");
@@ -212,7 +227,7 @@ class BtcCommand extends \PhpSlackBot\Command\BaseCommand {
                         "\nUSD: buy  ".$rates["BTCUSD"]["buy"]." | sell  ".$rates["BTCUSD"]["sell"].
                         "\nGBP: buy  ".$rates["BTCGBP"]["buy"]." | sell  ".$rates["BTCGBP"]["sell"]);
 	}
-	
+	// function processes view invoices command
 	private function viewInvoices($args){
 		
 		$invoices_per_page=20;		
